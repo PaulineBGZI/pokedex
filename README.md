@@ -1,70 +1,74 @@
-# Getting Started with Create React App
+# 🎮 Nouveau Pokédex – Projet React
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> 🧢 “Attrapez-les tous !”  
+> Un Pokédex moderne inspiré de l’univers Pokémon, développé avec **React**.  
+> Ce projet permet de **consulter, filtrer et gérer ses Pokémon** comme un vrai dresseur.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🧩 Sommaire
 
-### `npm start`
+- [✨ Aperçu](#-aperçu)
+- [🎯 Objectifs du projet](#-objectifs-du-projet)
+- [🧠 Fonctionnalités principales](#-fonctionnalités-principales)
+- [🧑‍💻 Technologies utilisées](#-technologies-utilisées)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## ✨ Aperçu
 
-### `npm test`
+Un Pokédex complet et responsive, fidèle à l’univers de la **1ʳᵉ génération (Kanto)**.  
+L’application inclut un **espace dresseur**, un **centre Pokémon** et un **Pokédex consultable sans connexion**.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+🎨 Thème clair, ambiance rétro, police **Press Start 2P**, et icônes officielles Pokémon.
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🎯 Objectifs du projet
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Ce projet vise à **recréer la technologie du Pokédex** perdue selon le scénario suivant :
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+> Nina Chen souhaite créer un nouveau Pokédex moderne, consultable partout, et relié à un centre Pokémon.
 
-### `npm run eject`
+**Objectifs principaux :**
+- Concevoir une application moderne et intuitive.  
+- Offrir une encyclopédie complète des Pokémon de Kanto.  
+- Permettre la gestion d’équipe pour chaque dresseur.  
+- Afficher l’historique de soins en centre Pokémon.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🧠 Fonctionnalités principales
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 📘 Pokédex
+- Consultation des **151 Pokémon** de Kanto.  
+- Filtres par **nom**, **type**, ou **ID**.  
+- Détails complets : description, localisation, statistiques, attaques (CT/CS incluses).  
+- Carte de la région Kanto avec **zone d’apparition clignotante**.  
+- Interface avec **onglets dynamiques** (Détails / Attaques / Carte / Évolutions).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 🎒 Espace Dresseur
+- Création et gestion d’équipe Pokémon (jusqu’à 6).  
+- Ajout et retrait de Pokémon.  
+- Données **sauvegardées localement** (LocalStorage).  
+- Attribution de badges Kanto avec **icônes officielles**.  
+- Barre de progression du dresseur.  
 
-## Learn More
+### ❤️ Centre Pokémon
+- Historique des soins d’un Pokémon.  
+- Détails médicaux (taille, poids, rythme cardiaque, température...).  
+- Accès réservé au personnel soignant (authentification).  
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🧑‍💻 Technologies utilisées
 
-### Code Splitting
+| Technologie | Usage |
+|--------------|-------|
+| ⚛️ **React** | Structure du front-end |
+| 🧱 **CSS3 (Press Start 2P)** | Thème rétro fidèle à Pokémon |
+| 🔥 **PokeAPI** | Données des Pokémon (noms, attaques, stats...) |
+| 🗂️ **LocalStorage** | Sauvegarde des données du dresseur |
+| 🌐 **Fetch API** | Requêtes asynchrones vers la PokeAPI |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
