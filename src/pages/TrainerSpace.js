@@ -3,9 +3,6 @@ import "../styles/TrainerSpace.css";
 import { getLoggedUser } from "../utils/auth";
 
 function TrainerSpace() {
-  const user = getLoggedUser();
-  console.log("👤 Utilisateur détecté :", user);
-
   const [trainer, setTrainer] = useState({
     name: "Sacha",
     teamName: "Équipe Kanto",
@@ -18,9 +15,19 @@ function TrainerSpace() {
   const [filteredPokemons, setFilteredPokemons] = useState([]);
   const [search, setSearch] = useState("");
 
-  // ✅ Fermer toute modale au montage
+  // 🔹 Lecture utilisateur connecté
+  const [user, setUser] = useState(() => getLoggedUser());
+
+  // 🔹 Si l’utilisateur change (connexion / refresh)
   useEffect(() => {
-    setShowAddModal(false);
+    const logged = getLoggedUser();
+    if (logged) {
+      console.log("✅ Utilisateur détecté :", logged.username);
+      setUser(logged);
+      setTrainer((prev) => ({ ...prev, name: logged.username }));
+    } else {
+      console.log("❌ Aucun utilisateur connecté");
+    }
   }, []);
 
   // ✅ Badges officiels de Kanto
@@ -35,39 +42,37 @@ function TrainerSpace() {
     { name: "Terre", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/badges/8.png" },
   ];
 
-  // ✅ Met à jour le nom du dresseur uniquement une fois au chargement
-  useEffect(() => {
-    if (user && user.username && trainer.name !== user.username) {
-      console.log("🟢 Mise à jour du dresseur :", user.username);
-      setTrainer((prev) => ({
-        ...prev,
-        name: user.username,
-      }));
-    }
-  }, []); // ⚠️ pas de dépendance pour éviter la boucle
-
   // ✅ Charger les données sauvegardées
   useEffect(() => {
     const saved = localStorage.getItem("trainerData");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setTrainer(parsed);
-        console.log("💾 Données de dresseur chargées :", parsed);
+        setTrainer((prev) => ({
+          ...parsed,
+          name: user?.username || parsed.name || "Sacha",
+        }));
+        console.log("📦 Données chargées :", parsed);
       } catch (e) {
         console.error("Erreur parsing trainerData :", e);
       }
     }
     setIsLoaded(true);
-  }, []);
+  }, [user]);
 
-  // ✅ Sauvegarde automatique (sans boucler)
+  // ✅ Sauvegarde automatique
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem("trainerData", JSON.stringify(trainer));
+      localStorage.setItem(
+        "trainerData",
+        JSON.stringify({
+          ...trainer,
+          name: user?.username || trainer.name,
+        })
+      );
       console.log("💾 Données sauvegardées :", trainer);
     }
-  }, [trainer, isLoaded]); // ❌ on retire "user" ici
+  }, [trainer, isLoaded, user]);
 
   // ✅ Charger les Pokémon
   useEffect(() => {
@@ -82,7 +87,8 @@ function TrainerSpace() {
             const detail = await res.json();
             const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${detail.id}`);
             const speciesData = await speciesRes.json();
-            const frenchName = speciesData.names.find((n) => n.language.name === "fr")?.name || detail.name;
+            const frenchName =
+              speciesData.names.find((n) => n.language.name === "fr")?.name || detail.name;
 
             return {
               id: detail.id,
@@ -94,7 +100,6 @@ function TrainerSpace() {
 
         setPokemons(detailedData);
         setFilteredPokemons(detailedData);
-        console.log("✅ Pokémon chargés :", detailedData.length);
       } catch (error) {
         console.error("Erreur de chargement des Pokémon :", error);
       }
@@ -190,7 +195,7 @@ function TrainerSpace() {
         </div>
       </div>
 
-      {/* ✅ Fenêtre modale démontée quand fermée */}
+      {/* ✅ Fenêtre modale d’ajout */}
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal-content pokedex-modal">
