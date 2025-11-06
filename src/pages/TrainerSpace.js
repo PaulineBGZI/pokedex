@@ -3,32 +3,24 @@ import "../styles/TrainerSpace.css";
 import { getLoggedUser } from "../utils/auth";
 
 function TrainerSpace() {
+  const user = getLoggedUser();
+
+  // État du dresseur
   const [trainer, setTrainer] = useState({
     name: "Sacha",
     teamName: "Équipe Kanto",
     team: [],
     badges: [],
   });
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [pokemons, setPokemons] = useState([]);
   const [filteredPokemons, setFilteredPokemons] = useState([]);
   const [search, setSearch] = useState("");
 
-  // 🔹 Lecture utilisateur connecté
-  const [user, setUser] = useState(() => getLoggedUser());
-
-  // 🔹 Si l’utilisateur change (connexion / refresh)
-  useEffect(() => {
-    const logged = getLoggedUser();
-    if (logged) {
-      console.log("✅ Utilisateur détecté :", logged.username);
-      setUser(logged);
-      setTrainer((prev) => ({ ...prev, name: logged.username }));
-    } else {
-      console.log("❌ Aucun utilisateur connecté");
-    }
-  }, []);
+  // 🔹 Clé unique selon l'utilisateur
+  const storageKey = `trainerData_${user?.email || "guest"}`;
 
   // ✅ Badges officiels de Kanto
   const badgesList = [
@@ -42,9 +34,9 @@ function TrainerSpace() {
     { name: "Terre", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/badges/8.png" },
   ];
 
-  // ✅ Charger les données sauvegardées
+  // ✅ Charger les données spécifiques à l'utilisateur
   useEffect(() => {
-    const saved = localStorage.getItem("trainerData");
+    const saved = localStorage.getItem(storageKey);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -52,29 +44,31 @@ function TrainerSpace() {
           ...parsed,
           name: user?.username || parsed.name || "Sacha",
         }));
-        console.log("📦 Données chargées :", parsed);
+        console.log("📦 Données chargées pour :", storageKey);
       } catch (e) {
         console.error("Erreur parsing trainerData :", e);
       }
+    } else {
+      console.log("🆕 Aucune donnée trouvée, création d’un profil neuf :", storageKey);
     }
     setIsLoaded(true);
-  }, [user]);
+  }, [user]); // recharge à chaque changement d’utilisateur
 
-  // ✅ Sauvegarde automatique
+  // ✅ Sauvegarde automatique des données de ce dresseur uniquement
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem(
-        "trainerData",
+        storageKey,
         JSON.stringify({
           ...trainer,
           name: user?.username || trainer.name,
         })
       );
-      console.log("💾 Données sauvegardées :", trainer);
+      console.log("💾 Données sauvegardées dans :", storageKey);
     }
   }, [trainer, isLoaded, user]);
 
-  // ✅ Charger les Pokémon
+  // ✅ Charger les Pokémon depuis la PokéAPI
   useEffect(() => {
     const fetchPokemons = async () => {
       try {
@@ -108,7 +102,7 @@ function TrainerSpace() {
     fetchPokemons();
   }, []);
 
-  // 🔍 Filtrage
+  // 🔍 Filtrage Pokémon
   useEffect(() => {
     if (!search.trim()) setFilteredPokemons(pokemons);
     else {
