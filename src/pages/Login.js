@@ -25,7 +25,6 @@ function Login() {
         const user = loginUser(email.trim(), password.trim());
         alert(`Bienvenue, ${user.username} !`);
         navigate("/trainer");
-        window.location.reload();
       }
     } catch (err) {
       setError(err.message);
