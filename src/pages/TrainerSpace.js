@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "../styles/TrainerSpace.css";
+import { getLoggedUser } from "../utils/auth";
 
 function TrainerSpace() {
+  const user = getLoggedUser();
+  console.log("👤 Utilisateur détecté :", user);
+
   const [trainer, setTrainer] = useState({
     name: "Sacha",
     teamName: "Équipe Kanto",
@@ -14,8 +18,13 @@ function TrainerSpace() {
   const [filteredPokemons, setFilteredPokemons] = useState([]);
   const [search, setSearch] = useState("");
 
-  // ✅ Badges purement visuels
- const badgesList = [
+  // ✅ Fermer toute modale au montage
+  useEffect(() => {
+    setShowAddModal(false);
+  }, []);
+
+  // ✅ Badges officiels de Kanto
+  const badgesList = [
     { name: "Roche", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/badges/1.png" },
     { name: "Cascade", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/badges/2.png" },
     { name: "Foudre", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/badges/3.png" },
@@ -26,12 +35,25 @@ function TrainerSpace() {
     { name: "Terre", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/badges/8.png" },
   ];
 
-  // ✅ Charger la sauvegarde
+  // ✅ Met à jour le nom du dresseur uniquement une fois au chargement
+  useEffect(() => {
+    if (user && user.username && trainer.name !== user.username) {
+      console.log("🟢 Mise à jour du dresseur :", user.username);
+      setTrainer((prev) => ({
+        ...prev,
+        name: user.username,
+      }));
+    }
+  }, []); // ⚠️ pas de dépendance pour éviter la boucle
+
+  // ✅ Charger les données sauvegardées
   useEffect(() => {
     const saved = localStorage.getItem("trainerData");
     if (saved) {
       try {
-        setTrainer(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        setTrainer(parsed);
+        console.log("💾 Données de dresseur chargées :", parsed);
       } catch (e) {
         console.error("Erreur parsing trainerData :", e);
       }
@@ -39,68 +61,84 @@ function TrainerSpace() {
     setIsLoaded(true);
   }, []);
 
-  // ✅ Sauvegarder après chargement
+  // ✅ Sauvegarde automatique (sans boucler)
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem("trainerData", JSON.stringify(trainer));
+      console.log("💾 Données sauvegardées :", trainer);
     }
-  }, [trainer, isLoaded]);
+  }, [trainer, isLoaded]); // ❌ on retire "user" ici
 
   // ✅ Charger les Pokémon
   useEffect(() => {
     const fetchPokemons = async () => {
       try {
-        const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
-        const data = await res.json();
+        const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+        const data = await response.json();
 
-        const detailed = await Promise.all(
+        const detailedData = await Promise.all(
           data.results.map(async (p) => {
-            const detail = await (await fetch(p.url)).json();
-            const species = await (await fetch(`https://pokeapi.co/api/v2/pokemon-species/${detail.id}`)).json();
-            const fr = species.names.find((n) => n.language.name === "fr")?.name || detail.name;
+            const res = await fetch(p.url);
+            const detail = await res.json();
+            const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${detail.id}`);
+            const speciesData = await speciesRes.json();
+            const frenchName = speciesData.names.find((n) => n.language.name === "fr")?.name || detail.name;
+
             return {
               id: detail.id,
-              name: fr,
+              name: frenchName,
               image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${detail.id}.png`,
             };
           })
         );
 
-        setPokemons(detailed);
-        setFilteredPokemons(detailed);
-      } catch (e) {
-        console.error("Erreur de chargement :", e);
+        setPokemons(detailedData);
+        setFilteredPokemons(detailedData);
+        console.log("✅ Pokémon chargés :", detailedData.length);
+      } catch (error) {
+        console.error("Erreur de chargement des Pokémon :", error);
       }
     };
+
     fetchPokemons();
   }, []);
 
-  // ✅ Filtrage recherche
+  // 🔍 Filtrage
   useEffect(() => {
     if (!search.trim()) setFilteredPokemons(pokemons);
-    else
+    else {
       setFilteredPokemons(
-        pokemons.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
+        pokemons.filter((p) =>
+          p.name.toLowerCase().includes(search.toLowerCase())
+        )
       );
+    }
   }, [search, pokemons]);
 
-  // ✅ Ajouter un Pokémon
+  // ➕ Ajouter un Pokémon
   const addPokemon = (p) => {
-    if (trainer.team.length >= 6)
-      return alert("Ton équipe est déjà complète (6 Pokémon max) !");
-    if (trainer.team.find((x) => x.id === p.id))
-      return alert(`${p.name} est déjà dans ton équipe !`);
+    if (trainer.team.length >= 6) {
+      alert("Ton équipe est déjà complète (6 Pokémon max) !");
+      return;
+    }
+    if (trainer.team.find((x) => x.id === p.id)) {
+      alert(`${p.name} est déjà dans ton équipe !`);
+      return;
+    }
 
     setTrainer({ ...trainer, team: [...trainer.team, p] });
     setShowAddModal(false);
   };
 
-  // ✅ Retirer un Pokémon
+  // ❌ Supprimer un Pokémon
   const removePokemon = (id) => {
-    setTrainer({ ...trainer, team: trainer.team.filter((p) => p.id !== id) });
+    setTrainer({
+      ...trainer,
+      team: trainer.team.filter((p) => p.id !== id),
+    });
   };
 
-  // ✅ Renommer équipe
+  // 📝 Renommer l’équipe
   const renameTeam = () => {
     const newName = prompt("Entre un nouveau nom d’équipe :", trainer.teamName);
     if (newName) setTrainer({ ...trainer, teamName: newName });
@@ -152,7 +190,7 @@ function TrainerSpace() {
         </div>
       </div>
 
-      {/* ✅ Fenêtre modale */}
+      {/* ✅ Fenêtre modale démontée quand fermée */}
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal-content pokedex-modal">
@@ -175,7 +213,9 @@ function TrainerSpace() {
               {filteredPokemons.map((p) => (
                 <div key={p.id} className="pokemon-item" onClick={() => addPokemon(p)}>
                   <img src={p.image} alt={p.name} />
-                  <p>#{p.id} {p.name}</p>
+                  <p>
+                    #{p.id} {p.name}
+                  </p>
                 </div>
               ))}
             </div>

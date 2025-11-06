@@ -1,0 +1,80 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #d32f2f;
+  color: white;
+  border-radius: 15px;
+  padding: 12px 20px;
+  border-bottom: 4px solid #8b0000;
+  flex-wrap: wrap;
+  font-family: "Press Start 2P", cursive;
+}
+
+.navbar-left {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+.navbar-left a {
+  color: white;
+  text-decoration: none;
+  font-size: 9px;
+  transition: 0.2s;
+}
+
+.navbar-left a:hover {
+  text-decoration: underline;
+  color: #ffcb05;
+}
+
+/* --- Partie droite --- */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.username {
+  font-size: 9px;
+  color: #ffcb05;
+}
+
+.logout-btn,
+.login-btn {
+  background: #2a75bb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-family: "Press Start 2P", cursive;
+  font-size: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.logout-btn:hover,
+.login-btn:hover {
+  background: #1a4d80;
+  transform: scale(1.05);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .navbar-left {
+    justify-content: center;
+  }
+
+  .navbar-right {
+    justify-content: center;
+  }
+}
