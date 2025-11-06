@@ -9,6 +9,7 @@ import PokemonCenter from "./pages/PokemonCenter";
 import Stats from "./pages/Stats";
 import Login from "./pages/Login";
 import clickSound from "./assets/click.mp3";
+import BackgroundMusic from "./components/BackgroundMusic";
 import "./styles/styles.css";
 
 function App() {
@@ -37,6 +38,8 @@ function App() {
             <Route path="/login" element={<Login />} />
           </Routes>
         </div>
+        {/* 🎵 Bouton musique de fond (Pokéball) */}
+        <BackgroundMusic />
       </div>
     </Router>
   );
